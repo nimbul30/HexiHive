@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HexiHive - Curate Your Corner of the Internet</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Add pseudo-element for the background image */
+      body::before {
+        content: '';
+        position: fixed; /* Fixes the background on scroll */
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background-image: url('https://i.imgur.com/2D9jeVL.png'); /* New background image */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1; /* Puts the background behind the content */
+      }
+
+      /* Set base styles and a semi-transparent overlay on the body */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: rgba(
+          17,
+          24,
+          39,
+          0.75
+        ); /* This is bg-gray-900 with 75% opacity */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+  </head>
+  <body class="text-white">
+    <!-- Header -->
+    <header class="absolute top-0 left-0 right-0 z-10 p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <!-- New Logo -->
+          <img
+            src="https://i.imgur.com/o0VXmh6.png"
+            alt="HexiHive Logo"
+            class="w-16 h-16"
+          />
+        </div>
+        <nav>
+          <button
+            class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+          >
+            Login
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero Section -->
+      <section
+        class="relative min-h-screen flex items-center justify-center p-8 overflow-hidden"
+      >
+        <div class="text-center z-10">
+          <h2
+            class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 leading-tight"
+          >
+            Escape the Algorithm.
+            <br />
+            <span class="text-red-400">Build Your Vibe.</span>
+          </h2>
+          <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-200 mb-8">
+            HexiHive is the algorithm-free playground for curators. Design your
+            personal space, share what you love, and discover authentic content
+            through social trails, not feeds.
+          </p>
+          <div
+            class="flex flex-col sm:flex-row justify-center items-center gap-4"
+          >
+            <button
+              class="w-full sm:w-auto bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105"
+            >
+              Create Your Hexi
+            </button>
+            <button
+              class="w-full sm:w-auto bg-gray-800/50 backdrop-blur-sm border border-gray-700 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors"
+            >
+              How it Works
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="py-20 px-4 bg-black/30 backdrop-blur-md">
+        <div class="container mx-auto text-center">
+          <h3 class="text-4xl font-bold mb-2">MySpace for the Modern Age</h3>
+          <p class="text-gray-300 text-lg mb-12">
+            Fast, functional, and focused on what matters: you.
+          </p>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <!-- Feature 1: Customizable Hexis -->
+            <div class="bg-gray-800/80 p-8 rounded-xl shadow-lg">
+              <div
+                class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  ></path>
+                </svg>
+              </div>
+              <h4 class="text-2xl font-bold mb-3">Customizable Hexis</h4>
+              <p class="text-gray-400">
+                Build your personal space with drag-and-drop blocks for music,
+                art, links, and thoughts. No code required.
+              </p>
+            </div>
+
+            <!-- Feature 2: Curation-First Discovery -->
+            <div class="bg-gray-800/80 p-8 rounded-xl shadow-lg">
+              <div
+                class="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6.253v11.494m-9-5.747h18"
+                  ></path>
+                  <path
+                    d="M12 6.253v11.494m-9-5.747h18"
+                    transform="rotate(45 12 12)"
+                  ></path>
+                  <path
+                    d="M12 6.253v11.494m-9-5.747h18"
+                    transform="rotate(-45 12 12)"
+                  ></path>
+                </svg>
+              </div>
+              <h4 class="text-2xl font-bold mb-3">Authentic Discovery</h4>
+              <p class="text-gray-400">
+                Forget the feed. Discover new creators by following "Social
+                Trails" — organic paths of who discovered who.
+              </p>
+            </div>
+
+            <!-- Feature 3: Music Integration -->
+            <div class="bg-gray-800/80 p-8 rounded-xl shadow-lg">
+              <div
+                class="bg-orange-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19V6l10-3v13M9 19c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2zm10 0c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2z"
+                  ></path>
+                </svg>
+              </div>
+              <h4 class="text-2xl font-bold mb-3">Deep Music Integration</h4>
+              <p class="text-gray-400">
+                Sync your Spotify and YouTube accounts to create the ultimate
+                vibe check. Share playlists, tracks, and music videos
+                effortlessly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="py-20 px-4">
+        <div class="container mx-auto text-center max-w-3xl">
+          <h3 class="text-4xl font-bold mb-4">Ready to Curate?</h3>
+          <p class="text-gray-300 text-lg mb-8">
+            Join a community that values taste, not just trends. Sign up for the
+            private beta and be one of the first to claim your corner of the
+            internet.
+          </p>
+          <div class="max-w-md mx-auto flex flex-col sm:flex-row gap-2">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              class="w-full flex-grow bg-gray-800 text-white px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+            <button
+              class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-md transition-colors"
+            >
+              Request Invite
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black/30 border-t border-gray-800 py-8">
+      <div class="container mx-auto text-center text-gray-400">
+        <p>&copy; 2025 HexiHive. All Rights Reserved.</p>
+        <div class="mt-4 flex justify-center space-x-6">
+          <a href="#" class="hover:text-white transition-colors">About</a>
+          <a href="#" class="hover:text-white transition-colors">Privacy</a>
+          <a href="#" class="hover:text-white transition-colors">Terms</a>
+          <a href="#" class="hover:text-white transition-colors">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
