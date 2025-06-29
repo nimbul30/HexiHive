@@ -1,6 +1,7 @@
 // src/app/login/page.js
 
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -57,8 +58,9 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push('/dashboard');
+      router.push('/dashboard'); // Redirect to dashboard
     } catch (err) {
+      // Error handling...
       switch (err.code) {
         case 'auth/invalid-email':
           setError('Please enter a valid email address.');
@@ -98,7 +100,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* --- MODIFICATION 1: REMOVED the onSubmit handler --- */}
+        {/* The form has NO onSubmit handler */}
         <form className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">
             <div>
@@ -117,7 +119,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full bg-gray-800/70 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 transition-all duration-300"
+                  className="w-full bg-gray-800/70 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
                 />
               </div>
             </div>
@@ -137,7 +139,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="6+ characters required"
                   required
-                  className="w-full bg-gray-800/70 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 transition-all duration-300"
+                  className="w-full bg-gray-800/70 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
                 />
               </div>
             </div>
@@ -150,7 +152,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* --- MODIFICATION 2: Changed type="submit" to "button" and added an explicit onClick --- */}
+          {/* This button has type="button" and its own onClick handler */}
           <button
             type="button"
             onClick={(e) => handleAuthAction(e, 'signin')}
