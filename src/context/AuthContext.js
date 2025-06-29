@@ -1,11 +1,11 @@
 // src/context/AuthContext.js
 
 'use client';
-import { onAuthStateChanged, getAuth } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth'; // No longer need getAuth
 import { useContext, createContext, useState, useEffect } from 'react';
-import firebase_app from '@/lib/firebase/config';
+import { auth } from '@/lib/firebase/config'; // Import the singleton auth instance
 
-const auth = getAuth(firebase_app);
+// const auth = getAuth(firebase_app); // This line is removed
 
 export const AuthContext = createContext({});
 
@@ -16,6 +16,7 @@ export const AuthContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // The imported `auth` instance is used here
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
