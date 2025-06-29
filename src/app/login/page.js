@@ -8,7 +8,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';
 
 export default function LoginPage() {
@@ -16,7 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [actionType, setActionType] = useState(''); // To manage loading text
+  const [actionType, setActionType] = useState('');
   const router = useRouter();
 
   const handleAuthAction = async (e, action) => {
@@ -38,7 +39,20 @@ export default function LoginPage() {
 
     try {
       if (action === 'signup') {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        const userDocRef = doc(db, 'users', user.uid);
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: '',
+          bio: '',
+          createdAt: serverTimestamp(),
+        });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -68,7 +82,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      {/* UPDATED: max-w-sm and p-10 for a more compact and spaced look */}
       <div className="w-full max-w-sm bg-gray-900/60 backdrop-blur-lg p-10 rounded-2xl shadow-2xl border border-white/10">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
@@ -84,10 +97,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form
-          className="flex flex-col gap-6"
-          onSubmit={(e) => handleAuthAction(e, 'signin')}
-        >
+        {/* --- MODIFICATION 1: REMOVED the onSubmit handler --- */}
+        <form className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">
             <div>
               <label
@@ -138,9 +149,10 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* UPDATED: Login is now the primary button */}
+          {/* --- MODIFICATION 2: Changed type="submit" to "button" and added an explicit onClick --- */}
           <button
-            type="submit" // Changed to type="submit" for form accessibility
+            type="button"
+            onClick={(e) => handleAuthAction(e, 'signin')}
             disabled={isLoading}
             className="w-full bg-red-600 hover:bg-red-500 disabled:bg-red-800/50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-all duration-300 transform hover:scale-105"
           >
@@ -148,7 +160,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* UPDATED: Sign up is now a text link for better hierarchy */}
         <p className="text-center text-sm text-gray-400 mt-8">
           Don't have an account?{' '}
           <button
