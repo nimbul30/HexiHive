@@ -56,7 +56,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push('/');
+      router.push('/dashboard');
     } catch (err) {
       switch (err.code) {
         case 'auth/invalid-email':
