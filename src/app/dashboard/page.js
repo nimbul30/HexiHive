@@ -7,42 +7,47 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import { db } from '@/lib/firebase/config';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function DashboardPage() {
-  const { user } = useAuthContext();
+  // --- 1. GET THE LOADING STATE FROM THE CONTEXT ---
+  const { user, loading: authLoading } = useAuthContext();
   const router = useRouter();
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
-    // If auth context has no user, redirect to login
-    if (user == null) {
-      router.push('/login');
-      return;
-    }
-
-    // We have a user, now check their profile from Firestore
-    const userDocRef = doc(db, 'users', user.uid);
-    getDoc(userDocRef).then((docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        // --- THE REDIRECT LOGIC ---
-        if (!data.hasCompletedOnboarding) {
-          router.push('/onboarding');
-        } else {
-          setProfile(data);
-          setLoading(false);
-        }
-      } else {
-        // This case shouldn't happen if our signup logic is correct
-        console.error('User document does not exist!');
-        setLoading(false);
+    // --- 2. THE CRITICAL LOGIC CHANGE ---
+    // Only run this logic when the auth state is no longer loading
+    if (!authLoading) {
+      if (user == null) {
+        // If auth is done and we still have no user, redirect to login
+        router.push('/login');
+        return;
       }
-    });
-  }, [user, router]);
 
-  if (loading) {
+      // We have a user, now check their profile from Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      getDoc(userDocRef).then((docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (!data.hasCompletedOnboarding) {
+            router.push('/onboarding');
+          } else {
+            setProfile(data);
+            setLoadingProfile(false);
+          }
+        } else {
+          console.error('User document does not exist!');
+          setLoadingProfile(false);
+        }
+      });
+    }
+  }, [user, authLoading, router]); // Dependency array now includes authLoading
+
+  // --- 3. COMBINE LOADING STATES ---
+  // Show loading if either the auth check or profile fetch is in progress
+  if (authLoading || loadingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         Loading...
@@ -51,7 +56,6 @@ export default function DashboardPage() {
   }
 
   // Render the dashboard only if loading is false and we have a profile
-  // (which implies onboarding was completed)
   return (
     <>
       <Header />
@@ -63,7 +67,6 @@ export default function DashboardPage() {
           <p className="text-center">
             Welcome, {profile?.displayName || profile?.email}!
           </p>
-          {/* We'll re-add the edit form here later */}
         </div>
       </main>
     </>

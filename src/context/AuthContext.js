@@ -1,11 +1,11 @@
 // src/context/AuthContext.js
 
 'use client';
-import { onAuthStateChanged } from 'firebase/auth'; // No longer need getAuth
+import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useContext, createContext, useState, useEffect } from 'react';
-import { auth } from '@/lib/firebase/config'; // Import the singleton auth instance
+import firebase_app from '@/lib/firebase/config';
 
-// const auth = getAuth(firebase_app); // This line is removed
+const auth = getAuth(firebase_app);
 
 export const AuthContext = createContext({});
 
@@ -13,29 +13,26 @@ export const useAuthContext = () => useContext(AuthContext);
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // <-- This state is key
 
   useEffect(() => {
-    // The imported `auth` instance is used here
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
       } else {
         setUser(null);
       }
-      setLoading(false);
+      setLoading(false); // Set loading to false once we have a response
     });
 
     return () => unsubscribe();
   }, []);
 
+  // Pass down BOTH the user and the loading state.
+  // Remove the ternary here; pages will handle their own loading UI.
   return (
-    <AuthContext.Provider value={{ user }}>
-      {loading ? (
-        <div className="text-white text-center mt-12">Loading...</div>
-      ) : (
-        children
-      )}
+    <AuthContext.Provider value={{ user, loading }}>
+      {children}
     </AuthContext.Provider>
   );
 };

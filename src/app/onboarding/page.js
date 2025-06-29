@@ -1,75 +1,114 @@
 // src/app/onboarding/page.js
-
 'use client';
 
-// --- 1. ONLY IMPORT from next-auth/react ---
-import { useSession, signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession, signIn } from 'next-auth/react';
+import { getTopArtists } from '@/lib/spotify'; // Import our new helper
 
 export default function OnboardingPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
-  // This function is for our "Finish" button later
+  // State to hold the fetched Spotify data
+  const [topArtists, setTopArtists] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // This effect will run when the session status changes to 'authenticated'
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      setLoading(true);
+      getTopArtists(session)
+        .then((data) => {
+          if (data && data.items) {
+            setTopArtists(data.items);
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error in getTopArtists:', error);
+          setLoading(false);
+        });
+    }
+  }, [status, session]);
+
   const handleFinishOnboarding = () => {
-    // In a real scenario, we'd update the Firebase doc here
-    // before redirecting.
-    console.log('Onboarding complete, redirecting to dashboard...');
+    // This is where we will later add the logic to set
+    // hasCompletedOnboarding to true in Firestore.
+    console.log('Proceeding to dashboard...');
     router.push('/dashboard');
   };
 
-  // --- 2. HANDLE THE LOADING STATE ---
-  // Status can be 'loading', 'authenticated', or 'unauthenticated'
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading Session...
-      </div>
-    );
-  }
+  // Render different content based on the session and loading state
+  const renderContent = () => {
+    if (status === 'loading' || loading) {
+      return <p>Loading your vibe...</p>;
+    }
 
-  // --- 3. IF THE USER IS AUTHENTICATED WITH SPOTIFY, SHOW THEIR DATA ---
-  if (status === 'authenticated') {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-white">
-        <div className="w-full max-w-lg bg-gray-900/50 p-8 rounded-2xl text-center">
-          <h1 className="text-3xl font-bold mb-4">Connection Successful!</h1>
-          <p className="mb-2">You are connected as:</p>
-          <p className="text-lg font-bold text-green-400 mb-6">
-            {session.user.name} ({session.user.email})
-          </p>
-          <pre className="text-left bg-gray-800 p-4 rounded-md overflow-x-auto text-xs">
-            <code>{JSON.stringify(session, null, 2)}</code>
-          </pre>
+    if (topArtists) {
+      return (
+        <div className="text-left w-full">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Here are your top artists!
+          </h2>
+          <ul className="space-y-3">
+            {topArtists.map((artist) => (
+              <li
+                key={artist.id}
+                className="flex items-center bg-gray-800/70 p-3 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <img
+                  src={artist.images[2]?.url || '/default-artist.png'}
+                  alt={artist.name}
+                  className="w-12 h-12 rounded-full mr-4 object-cover"
+                />
+                <span className="font-semibold">{artist.name}</span>
+              </li>
+            ))}
+          </ul>
           <button
             onClick={handleFinishOnboarding}
-            className="w-full mt-6 bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg"
+            className="w-full mt-6 bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-lg"
           >
-            Finish Onboarding
+            Use These to Build My Hive
           </button>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // --- 4. IF NOT AUTHENTICATED, SHOW THE CONNECT BUTTON ---
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-gray-900/50 backdrop-blur-xl p-8 md:p-12 rounded-2xl shadow-2xl text-center border border-gray-700">
-        <header className="mb-8">
-          <h1 className="text-4xl font-extrabold text-white mb-2">
-            Build your Hive
-          </h1>
-          <p className="text-lg text-gray-300">
-            Connect your Spotify account to get started.
-          </p>
-        </header>
+    // Default state: show the connect button
+    return (
+      <div className="flex flex-col space-y-4 w-full">
         <button
           onClick={() => signIn('spotify')}
           className="flex items-center justify-center w-full bg-[#1DB954] hover:bg-[#1ED760] text-white font-bold py-4 px-6 rounded-lg text-lg"
         >
           Connect Spotify 🎧
         </button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-gray-900/50 backdrop-blur-xl p-8 md:p-12 rounded-2xl shadow-2xl text-center border border-gray-700 flex flex-col items-center">
+        <header className="mb-8">
+          <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">
+            Build your Hive in seconds.
+          </h1>
+          <p className="text-lg text-gray-300">
+            Let's start by connecting to your Spotify.
+          </p>
+        </header>
+        {renderContent()}
+        <div className="mt-8">
+          <button
+            onClick={() => router.push('/dashboard')} // For now, just a simple redirect
+            className="text-gray-400 hover:text-white hover:underline transition-colors"
+          >
+            Skip for now
+          </button>
+        </div>
       </div>
     </div>
   );
