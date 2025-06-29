@@ -52,6 +52,7 @@ export default function LoginPage() {
           displayName: '',
           bio: '',
           createdAt: serverTimestamp(),
+          hasCompletedOnboarding: false,
         });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
