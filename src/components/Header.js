@@ -24,7 +24,7 @@ export default function Header() {
   const navLinks = [
     { name: 'Hexi Studio', href: '/studio' },
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'YourHive', href: '/yourhive' },
+    { name: 'Your Hive', href: '/yourhive' },
     { name: 'Hive Network', href: '/network' },
   ];
 
