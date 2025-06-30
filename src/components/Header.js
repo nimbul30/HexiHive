@@ -2,7 +2,7 @@
 
 'use client';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthContext } from '@/context/AuthContext';
 import { auth } from '@/lib/firebase/config';
 import { signOut } from 'firebase/auth';
@@ -10,7 +10,7 @@ import { signOut } from 'firebase/auth';
 export default function Header() {
   const { user } = useAuthContext();
   const router = useRouter();
-  const pathname = usePathname(); // Hook to get the current URL path
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     try {
@@ -21,71 +21,75 @@ export default function Header() {
     }
   };
 
-  // Define our navigation links in an array for cleaner mapping
   const navLinks = [
     { name: 'Hexi Studio', href: '/studio' },
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'YourHive', href: '/yourhive' }, // Private
-    { name: 'Inner Hive', href: '/innerhive' }, // Friends/Family
-    { name: 'HiveVerse', href: '/hiveverse' }, // Public
+    { name: 'YourHive', href: '/yourhive' },
+    { name: 'Inner Hive', href: '/innerhive' },
+    { name: 'HiveVerse', href: '/hiveverse' },
   ];
 
   return (
+    // The main container remains a sticky header
     <header className="w-full bg-black/20 backdrop-blur-md p-4 border-b border-gray-700/50 sticky top-0 z-50">
+      {/* This flex container pushes the two main groups apart */}
       <div className="container mx-auto flex justify-between items-center">
-        {/* Section 1: Logo */}
+        {/* Group 1: Logo (Stays on the far left) */}
         <div className="flex-shrink-0">
-          <Link href="/" className="flex items-center space-x-3">
+          <Link href="/">
             <img
-              src="https://i.imgur.com/MOtNKI0.png" // New logo
+              src="https://i.imgur.com/MOtNKI0.png"
               alt="HexiHive Logo"
-              className="h-32 w-auto" // Match the new header's logo style
+              className="h-32 w-auto" // Using the new logo and style
             />
           </Link>
         </div>
 
-        {/* Section 2: Navigation Links (Only shown if user is logged in) */}
-        {user && (
-          <nav className="hidden md:flex gap-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-lg font-medium transition-colors duration-200 ${
-                  pathname === link.href
-                    ? 'text-white' // Active link style
-                    : 'text-gray-400 hover:text-white' // Inactive link style
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        {/* Section 3: User Actions (Login or Logout/Avatar) */}
-        <div className="flex items-center gap-x-4">
+        {/* Group 2: All Nav and User Actions (Pushed to the far right) */}
+        <div className="flex items-center gap-x-8">
           {user ? (
-            // If user is logged in, show Avatar and Logout button
+            // If logged in, show the full navigation suite
             <>
-              <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center border-2 border-gray-600">
-                <span className="text-xl font-bold">
-                  {user.email ? user.email[0].toUpperCase() : '?'}
-                </span>
+              <nav className="hidden md:flex gap-x-8">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`text-lg font-medium transition-colors duration-200 ${
+                      pathname === link.href
+                        ? 'text-white'
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* User actions are now inside the same right-aligned group */}
+              <div className="flex items-center gap-x-4">
+                {/* Logout Button (Now first, with new style) */}
+                <button
+                  onClick={handleLogout}
+                  className="btn-primary py-2 px-4 rounded-md text-sm" // New .btn-primary style
+                >
+                  Logout
+                </button>
+                {/* Avatar (Now second) */}
+                <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center border-2 border-gray-600">
+                  <span className="text-xl font-bold">
+                    {user.email ? user.email[0].toUpperCase() : '?'}
+                  </span>
+                </div>
               </div>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors" // Red and smaller
-              >
-                Logout
-              </button>
             </>
           ) : (
-            // If no user, show the original Login button
-            <Link href="/login">
-              <button className="bg-red-600 hover:bg-red-500 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                Login
-              </button>
+            // If not logged in, show a simple login button
+            <Link
+              href="/login"
+              className="btn-primary py-2 px-8 rounded-md text-sm"
+            >
+              Login
             </Link>
           )}
         </div>

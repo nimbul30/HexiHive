@@ -94,7 +94,7 @@ export default function StudioPage() {
           <h1 className="text-4xl font-extrabold">Hexi Studio</h1>
           <button
             onClick={createNewHexi}
-            className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+            className="btn-primary py-2 px-6 rounded-lg" // Using the new .btn-primary style
           >
             + Create New Hexi
           </button>
