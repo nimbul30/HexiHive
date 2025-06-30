@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/context/AuthContext';
 import Header from '@/components/Header';
 
-// Import Firestore functions
 import { db } from '@/lib/firebase/config';
 import {
   collection,
@@ -24,27 +23,22 @@ export default function StudioPage() {
   const [hexis, setHexis] = useState([]);
   const [loadingHexis, setLoadingHexis] = useState(true);
 
-  // Effect to protect the route
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
 
-  // Effect to fetch Hexis from Firestore in real-time
   useEffect(() => {
     if (user) {
       setLoadingHexis(true);
       const hexisRef = collection(db, 'hexis');
-      // Create a query to get only the Hexis for the current user
-      // that are in the 'studio'
       const q = query(
         hexisRef,
         where('uid', '==', user.uid),
         where('status', '==', 'studio')
       );
 
-      // onSnapshot listens for real-time updates
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const hexisData = [];
         querySnapshot.forEach((doc) => {
@@ -54,22 +48,19 @@ export default function StudioPage() {
         setLoadingHexis(false);
       });
 
-      // Cleanup subscription on component unmount
       return () => unsubscribe();
     }
   }, [user]);
 
-  // Function to create a new, simple Text Hexi
   const createNewHexi = async () => {
     if (!user) return;
-
     try {
       await addDoc(collection(db, 'hexis'), {
         uid: user.uid,
         type: 'text',
         content: { text: 'New Hexi - Click to edit!' },
         status: 'studio',
-        assignedHive: 'yourhive', // Default to private
+        assignedHive: 'yourhive',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -90,17 +81,20 @@ export default function StudioPage() {
     <>
       <Header />
       <main className="container mx-auto p-8 text-white">
-        <div className="flex justify-between items-center mb-8">
+        {/* --- MODIFIED HEADER SECTION --- */}
+        <div className="relative text-center mb-8 py-4">
           <h1 className="text-4xl font-extrabold">Hexi Studio</h1>
-          <button
-            onClick={createNewHexi}
-            className="btn-primary py-2 px-6 rounded-lg transition-all duration-500"
-          >
-            + Create New Hexi
-          </button>
+          <div className="absolute top-1/2 right-0 -translate-y-1/2">
+            <button
+              onClick={createNewHexi}
+              className="btn-primary py-2 px-6 rounded-lg transition-all duration-500" // Hover effect is inherited from .btn-primary
+            >
+              + Create New Hexi
+            </button>
+          </div>
         </div>
 
-        <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+        <div className="glass-panel p-6 rounded-xl border border-slate-700">
           <h2 className="text-2xl font-bold mb-4">Your Drafts</h2>
           {loadingHexis ? (
             <p>Loading your hexis...</p>

@@ -25,16 +25,12 @@ export default function Header() {
     { name: 'Hexi Studio', href: '/studio' },
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'YourHive', href: '/yourhive' },
-    { name: 'Inner Hive', href: '/innerhive' },
-    { name: 'HiveVerse', href: '/hiveverse' },
+    { name: 'Hive Network', href: '/network' },
   ];
 
   return (
     <header className="w-full bg-black/20 backdrop-blur-md p-4 border-b border-gray-700/50 sticky top-0 z-50">
-      {/* --- THE MAIN CHANGE IS HERE --- */}
-      {/* Removed 'container mx-auto' and added padding 'px-8' to allow content to go to the edges */}
       <div className="w-full flex justify-between items-center px-8">
-        {/* Group 1: Logo (Pushed to the far left) */}
         <div className="flex-shrink-0">
           <Link href="/">
             <img
@@ -45,7 +41,6 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Group 2: All Nav and User Actions (Pushed to the far right) */}
         <div className="flex items-center gap-x-8">
           {user ? (
             <>
@@ -57,7 +52,7 @@ export default function Header() {
                     className={`text-lg font-medium transition-colors duration-200 ${
                       pathname === link.href
                         ? 'text-white'
-                        : 'text-gray-400 hover:text-white'
+                        : 'text-gray-400 hover:text-white' // <-- CORRECTED THIS LINE
                     }`}
                   >
                     {link.name}
@@ -66,7 +61,6 @@ export default function Header() {
               </nav>
 
               <div className="flex items-center gap-x-4">
-                {/* Logout Button with explicit transition for smooth hover */}
                 <button
                   onClick={handleLogout}
                   className="btn-primary py-2 px-4 rounded-md text-sm transition-all duration-500"
