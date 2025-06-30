@@ -37,9 +37,9 @@ export default function Header() {
         <div className="flex-shrink-0">
           <Link href="/" className="flex items-center space-x-3">
             <img
-              src="https://i.imgur.com/o0VXmh6.png"
+              src="https://i.imgur.com/MOtNKI0.png" // New logo
               alt="HexiHive Logo"
-              className="w-24 h-24" // Increased size
+              className="h-32 w-auto" // Match the new header's logo style
             />
           </Link>
         </div>
