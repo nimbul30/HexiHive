@@ -58,7 +58,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push('/studio'); // Redirect to dashboard
+      router.push('/studio'); // Redirect to studio
     } catch (err) {
       // Error handling...
       switch (err.code) {
@@ -85,22 +85,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-gray-900/60 backdrop-blur-lg p-10 rounded-2xl shadow-2xl border border-white/10">
-        <div className="text-center mb-8">
+      {/* Updated the main container to match the new branding */}
+      <div className="w-full max-w-md glass-panel p-8 md:p-12 rounded-2xl shadow-2xl text-center">
+        <header className="mb-8">
           <Link href="/" className="inline-block mb-4">
+            {/* --- LOGO UPDATED HERE --- */}
             <img
-              src="https://i.imgur.com/o0VXmh6.png"
+              src="https://i.imgur.com/MOtNKI0.png"
               alt="HexiHive Logo"
-              className="w-20 h-20 mx-auto"
+              className="h-24 w-auto mx-auto" // New logo and adjusted size
             />
           </Link>
-          <h1 className="text-3xl font-extrabold text-white">Welcome Back</h1>
-          <p className="text-gray-400 mt-2">
-            Enter your credentials to log in.
-          </p>
-        </div>
+          <h1 className="text-3xl font-extrabold text-white">Enter the Hive</h1>
+        </header>
 
-        {/* The form has NO onSubmit handler */}
         <form className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">
             <div>
@@ -119,7 +117,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full bg-gray-800/70 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
+                  className="w-full bg-slate-800 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gold border border-slate-600"
                 />
               </div>
             </div>
@@ -139,7 +137,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="6+ characters required"
                   required
-                  className="w-full bg-gray-800/70 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
+                  className="w-full bg-slate-800 text-white pl-12 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gold border border-slate-600"
                 />
               </div>
             </div>
@@ -152,23 +150,23 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* This button has type="button" and its own onClick handler */}
+          {/* Updated buttons to match new branding */}
           <button
             type="button"
             onClick={(e) => handleAuthAction(e, 'signin')}
             disabled={isLoading}
-            className="w-full bg-red-600 hover:bg-red-500 disabled:bg-red-800/50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-all duration-300 transform hover:scale-105"
+            className="btn-primary w-full py-3 rounded-lg text-lg"
           >
             {isLoading && actionType === 'signin' ? 'Logging In...' : 'Login'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-400 mt-8">
+        <p className="text-center text-sm text-slate-300 mt-8">
           Don't have an account?{' '}
           <button
             onClick={(e) => handleAuthAction(e, 'signup')}
             disabled={isLoading}
-            className="font-semibold text-red-400 hover:text-red-300 transition-colors disabled:text-gray-500"
+            className="font-semibold text-gold hover:text-gold-light transition-colors disabled:text-gray-500"
           >
             {isLoading && actionType === 'signup'
               ? 'Creating account...'

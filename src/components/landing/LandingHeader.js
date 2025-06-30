@@ -1,4 +1,7 @@
+// src/components/landing/LandingHeader.js
+
 import Link from 'next/link';
+
 export default function LandingHeader() {
   return (
     <header className="w-full sticky top-0 z-50 glass-panel">
@@ -10,16 +13,28 @@ export default function LandingHeader() {
             className="h-32 w-auto"
           />
         </Link>
-        <nav className="pr-6">
+        {/* Updated nav section */}
+        <nav className="pr-6 flex items-center gap-x-6">
           <a
             href="#features"
-            className="hidden md:inline text-white mx-4 hover:text-gold transition"
+            className="hidden md:inline text-white hover:text-gold transition"
           >
             Features
           </a>
-          <a href="/login" className="btn-primary py-2 px-8 rounded-md text-sm">
+          {/* New Login Link */}
+          <Link
+            href="/login"
+            className="text-white hover:text-gold transition font-medium"
+          >
+            Login
+          </Link>
+          {/* Existing Join Beta Button */}
+          <Link
+            href="/login"
+            className="btn-primary py-2 px-8 rounded-md text-sm"
+          >
             Join Beta
-          </a>
+          </Link>
         </nav>
       </div>
     </header>
