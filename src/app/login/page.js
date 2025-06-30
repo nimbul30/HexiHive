@@ -58,7 +58,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push('/dashboard'); // Redirect to dashboard
+      router.push('/studio'); // Redirect to dashboard
     } catch (err) {
       // Error handling...
       switch (err.code) {
