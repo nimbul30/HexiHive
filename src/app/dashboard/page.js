@@ -10,23 +10,18 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 
 export default function DashboardPage() {
-  // --- 1. GET THE LOADING STATE FROM THE CONTEXT ---
   const { user, loading: authLoading } = useAuthContext();
   const router = useRouter();
   const [profile, setProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
-    // --- 2. THE CRITICAL LOGIC CHANGE ---
-    // Only run this logic when the auth state is no longer loading
     if (!authLoading) {
       if (user == null) {
-        // If auth is done and we still have no user, redirect to login
         router.push('/login');
         return;
       }
 
-      // We have a user, now check their profile from Firestore
       const userDocRef = doc(db, 'users', user.uid);
       getDoc(userDocRef).then((docSnap) => {
         if (docSnap.exists()) {
@@ -43,10 +38,8 @@ export default function DashboardPage() {
         }
       });
     }
-  }, [user, authLoading, router]); // Dependency array now includes authLoading
+  }, [user, authLoading, router]);
 
-  // --- 3. COMBINE LOADING STATES ---
-  // Show loading if either the auth check or profile fetch is in progress
   if (authLoading || loadingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
@@ -55,7 +48,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Render the dashboard only if loading is false and we have a profile
   return (
     <>
       <Header />

@@ -55,10 +55,11 @@ export default function LoginPage() {
           createdAt: serverTimestamp(),
           hasCompletedOnboarding: false,
         });
+        router.push('/onboarding');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
+        router.push('/dashboard');
       }
-      router.push('/studio'); // Redirect to studio
     } catch (err) {
       // Error handling...
       switch (err.code) {
