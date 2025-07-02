@@ -2,24 +2,37 @@
 
 import NextAuth from 'next-auth';
 import SpotifyProvider from 'next-auth/providers/spotify';
+import GoogleProvider from 'next-auth/providers/google';
 
-const scopes = [
+const spotifyScopes = [
   'user-top-read',
   'playlist-read-private',
   'user-read-email',
 ].join(',');
 
 const handler = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET, // <-- ADD THIS LINE
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      authorization: `https://accounts.spotify.com/authorize?scope=${scopes}`,
+      authorization: `https://accounts.spotify.com/authorize?scope=${spotifyScopes}`,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+          scope:
+            'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/youtube.readonly',
+        },
+      },
     }),
   ],
   callbacks: {
-    // ... your callbacks remain the same
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;

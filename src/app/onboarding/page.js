@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn } from 'next-auth/react';
 import { getTopArtists } from '@/lib/spotify';
+import { getMySubscriptions } from '@/lib/youtube'; // Import the new YouTube helper
 import { useAuthContext } from '@/context/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
@@ -15,22 +16,39 @@ export default function OnboardingPage() {
   const { user } = useAuthContext();
 
   const [topArtists, setTopArtists] = useState(null);
+  const [subscriptions, setSubscriptions] = useState(null); // State for YouTube subscriptions
   const [loading, setLoading] = useState(false);
 
+  // This effect runs when the session status changes
   useEffect(() => {
     if (status === 'authenticated' && session) {
       setLoading(true);
-      getTopArtists(session)
-        .then((data) => {
-          if (data && data.items) {
-            setTopArtists(data.items);
-          }
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error in getTopArtists:', error);
-          setLoading(false);
-        });
+      // Check which provider was used for the sign-in
+      if (session.provider === 'spotify') {
+        getTopArtists(session)
+          .then((data) => {
+            if (data && data.items) {
+              setTopArtists(data.items);
+            }
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error('Error in getTopArtists:', error);
+            setLoading(false);
+          });
+      } else if (session.provider === 'google') {
+        getMySubscriptions(session)
+          .then((data) => {
+            if (data && data.items) {
+              setSubscriptions(data.items);
+            }
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error('Error in getMySubscriptions:', error);
+            setLoading(false);
+          });
+      }
     }
   }, [status, session]);
 
@@ -56,6 +74,7 @@ export default function OnboardingPage() {
       return <p>Loading your vibe...</p>;
     }
 
+    // Display Spotify Artists
     if (topArtists) {
       return (
         <div className="text-left w-full">
@@ -79,7 +98,7 @@ export default function OnboardingPage() {
           </ul>
           <button
             onClick={handleFinishOnboarding}
-            className="w-full mt-6 bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-lg"
+            className="w-full mt-6 btn-primary py-3 px-6 rounded-lg text-lg"
           >
             Use These to Build My Hive
           </button>
@@ -87,14 +106,52 @@ export default function OnboardingPage() {
       );
     }
 
-    // Default state: show the connect button
+    // Display YouTube Subscriptions
+    if (subscriptions) {
+      return (
+        <div className="text-left w-full">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Here are your YouTube subscriptions!
+          </h2>
+          <ul className="space-y-3">
+            {subscriptions.map((sub) => (
+              <li
+                key={sub.id}
+                className="flex items-center bg-gray-800/70 p-3 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <img
+                  src={sub.snippet.thumbnails.default.url}
+                  alt={sub.snippet.title}
+                  className="w-12 h-12 rounded-full mr-4 object-cover"
+                />
+                <span className="font-semibold">{sub.snippet.title}</span>
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={handleFinishOnboarding}
+            className="w-full mt-6 btn-primary py-3 px-6 rounded-lg text-lg"
+          >
+            Use These to Build My Hive
+          </button>
+        </div>
+      );
+    }
+
+    // Default state: show connect buttons
     return (
       <div className="flex flex-col space-y-4 w-full">
         <button
-          onClick={() => signIn('spotify')}
+          onClick={() => signIn('spotify', { callbackUrl: '/onboarding' })}
           className="flex items-center justify-center w-full bg-[#1DB954] hover:bg-[#1ED760] text-white font-bold py-4 px-6 rounded-lg text-lg"
         >
           Connect Spotify 🎧
+        </button>
+        <button
+          onClick={() => signIn('google', { callbackUrl: '/onboarding' })}
+          className="flex items-center justify-center w-full bg-[#FF0000] hover:bg-[#ff4c4c] text-white font-bold py-4 px-6 rounded-lg text-lg"
+        >
+          Connect YouTube 📺
         </button>
       </div>
     );
@@ -108,7 +165,7 @@ export default function OnboardingPage() {
             Build your Hive in seconds.
           </h1>
           <p className="text-lg text-gray-300">
-            Let's start by connecting to your Spotify.
+            Let's start by connecting to your Spotify or YouTube.
           </p>
         </header>
         {renderContent()}
