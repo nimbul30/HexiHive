@@ -2,13 +2,15 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function AuthErrorPage() {
+// Create a new component that uses the hook
+function ErrorMessage() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
   return (
-    <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>
+    <>
       <h1>Authentication Error</h1>
       <p>An error occurred during authentication. Please try again.</p>
       {error && (
@@ -16,6 +18,18 @@ export default function AuthErrorPage() {
           <strong>Error:</strong> {error}
         </p>
       )}
+    </>
+  );
+}
+
+// The main page component
+export default function AuthErrorPage() {
+  return (
+    <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>
+      {/* Wrap the new component in a Suspense boundary */}
+      <Suspense fallback={<div>Loading...</div>}>
+        <ErrorMessage />
+      </Suspense>
     </div>
   );
 }
