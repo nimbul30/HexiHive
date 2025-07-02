@@ -14,11 +14,19 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+          // This scope asks for permission to view the user's YouTube account.
+          scope:
+            'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube.readonly',
+        },
+      },
     }),
   ],
   callbacks: {
-    // This callback adds the provider and access token to the JWT
-    // so it can be accessed in the session callback.
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
@@ -26,8 +34,6 @@ const handler = NextAuth({
       }
       return token;
     },
-    // This callback makes the provider and access token available
-    // on the client-side session object.
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.provider = token.provider;
@@ -36,7 +42,7 @@ const handler = NextAuth({
   },
   pages: {
     signIn: '/login',
-    error: '/auth/error', // A custom error page for better debugging
+    error: '/auth/error',
   },
 });
 
