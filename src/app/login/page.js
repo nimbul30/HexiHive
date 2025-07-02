@@ -1,5 +1,4 @@
 // src/app/login/page.js
-
 'use client';
 
 import { useState } from 'react';
@@ -10,7 +9,7 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';
 
 export default function LoginPage() {
@@ -57,11 +56,23 @@ export default function LoginPage() {
         });
         router.push('/onboarding');
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        router.push('/dashboard');
+        // 'signin'
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        const userDocRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(userDocRef);
+
+        if (docSnap.exists() && docSnap.data().hasCompletedOnboarding) {
+          router.push('/dashboard');
+        } else {
+          router.push('/onboarding');
+        }
       }
     } catch (err) {
-      // Error handling...
       switch (err.code) {
         case 'auth/invalid-email':
           setError('Please enter a valid email address.');
@@ -86,15 +97,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      {/* Updated the main container to match the new branding */}
       <div className="w-full max-w-md glass-panel p-8 md:p-12 rounded-2xl shadow-2xl text-center">
         <header className="mb-8">
           <Link href="/" className="inline-block mb-4">
-            {/* --- LOGO UPDATED HERE --- */}
             <img
               src="https://i.imgur.com/MOtNKI0.png"
               alt="HexiHive Logo"
-              className="h-24 w-auto mx-auto" // New logo and adjusted size
+              className="h-24 w-auto mx-auto"
             />
           </Link>
           <h1 className="text-3xl font-extrabold text-white">Enter the Hive</h1>
@@ -151,7 +160,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Updated buttons to match new branding */}
           <button
             type="button"
             onClick={(e) => handleAuthAction(e, 'signin')}
