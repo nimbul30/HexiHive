@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn } from 'next-auth/react';
 import { getTopArtists } from '@/lib/spotify';
-import { getMySubscriptions } from '@/lib/youtube'; // Import the new YouTube helper
+import { getMySubscriptions } from '@/lib/youtube';
 import { useAuthContext } from '@/context/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
@@ -16,15 +16,17 @@ export default function OnboardingPage() {
   const { user } = useAuthContext();
 
   const [topArtists, setTopArtists] = useState(null);
-  const [subscriptions, setSubscriptions] = useState(null); // State for YouTube subscriptions
+  const [subscriptions, setSubscriptions] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // This effect runs when the session status changes
   useEffect(() => {
     if (status === 'authenticated' && session) {
       setLoading(true);
-      // Check which provider was used for the sign-in
-      if (session.provider === 'spotify') {
+      // More robustly check the provider based on the session data structure
+      if (
+        session?.token?.account?.provider === 'spotify' ||
+        (session.accessToken && session.provider === 'spotify')
+      ) {
         getTopArtists(session)
           .then((data) => {
             if (data && data.items) {
@@ -36,7 +38,10 @@ export default function OnboardingPage() {
             console.error('Error in getTopArtists:', error);
             setLoading(false);
           });
-      } else if (session.provider === 'google') {
+      } else if (
+        session?.token?.account?.provider === 'google' ||
+        (session.accessToken && session.provider === 'google')
+      ) {
         getMySubscriptions(session)
           .then((data) => {
             if (data && data.items) {
@@ -48,6 +53,9 @@ export default function OnboardingPage() {
             console.error('Error in getMySubscriptions:', error);
             setLoading(false);
           });
+      } else {
+        // Fallback or default case if provider is not identified
+        setLoading(false);
       }
     }
   }, [status, session]);
@@ -74,7 +82,6 @@ export default function OnboardingPage() {
       return <p>Loading your vibe...</p>;
     }
 
-    // Display Spotify Artists
     if (topArtists) {
       return (
         <div className="text-left w-full">
@@ -106,7 +113,6 @@ export default function OnboardingPage() {
       );
     }
 
-    // Display YouTube Subscriptions
     if (subscriptions) {
       return (
         <div className="text-left w-full">
@@ -138,7 +144,6 @@ export default function OnboardingPage() {
       );
     }
 
-    // Default state: show connect buttons
     return (
       <div className="flex flex-col space-y-4 w-full">
         <button
