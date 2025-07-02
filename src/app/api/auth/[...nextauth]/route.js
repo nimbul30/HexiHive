@@ -10,7 +10,6 @@ const handler = NextAuth({
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      authorization: `https://accounts.spotify.com/authorize?scope=user-top-read,playlist-read-private,user-read-email`,
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -18,6 +17,8 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    // This callback adds the provider and access token to the JWT
+    // so it can be accessed in the session callback.
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
@@ -25,6 +26,8 @@ const handler = NextAuth({
       }
       return token;
     },
+    // This callback makes the provider and access token available
+    // on the client-side session object.
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.provider = token.provider;
@@ -33,7 +36,7 @@ const handler = NextAuth({
   },
   pages: {
     signIn: '/login',
-    error: '/auth/error',
+    error: '/auth/error', // A custom error page for better debugging
   },
 });
 

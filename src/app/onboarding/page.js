@@ -7,7 +7,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { getTopArtists } from '@/lib/spotify';
 import { getMySubscriptions } from '@/lib/youtube';
 import { useAuthContext } from '@/context/AuthContext';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
 export default function OnboardingPage() {
@@ -22,20 +22,25 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (status === 'authenticated' && session) {
       setLoading(true);
+      // Check which provider was used for the sign-in
       if (session.provider === 'spotify') {
-        getTopArtists(session).then((data) => {
-          if (data && data.items) {
-            setTopArtists(data.items);
-          }
-          setLoading(false);
-        });
+        getTopArtists(session)
+          .then((data) => {
+            if (data && data.items) {
+              setTopArtists(data.items);
+            }
+          })
+          .finally(() => setLoading(false));
       } else if (session.provider === 'google') {
-        getMySubscriptions(session).then((data) => {
-          if (data && data.items) {
-            setSubscriptions(data.items);
-          }
-          setLoading(false);
-        });
+        getMySubscriptions(session)
+          .then((data) => {
+            if (data && data.items) {
+              setSubscriptions(data.items);
+            }
+          })
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
       }
     }
   }, [status, session]);
@@ -47,9 +52,28 @@ export default function OnboardingPage() {
     }
     const userDocRef = doc(db, 'users', user.uid);
     try {
-      await updateDoc(userDocRef, {
+      const onboardingData = {
         hasCompletedOnboarding: true,
-      });
+        onboardingCompletedAt: serverTimestamp(),
+      };
+
+      if (topArtists) {
+        onboardingData.spotifyTopArtists = topArtists.map((artist) => ({
+          id: artist.id,
+          name: artist.name,
+          image: artist.images[2]?.url || null,
+        }));
+      }
+
+      if (subscriptions) {
+        onboardingData.youtubeSubscriptions = subscriptions.map((sub) => ({
+          id: sub.snippet.resourceId.channelId,
+          name: sub.snippet.title,
+          image: sub.snippet.thumbnails.default.url,
+        }));
+      }
+
+      await updateDoc(userDocRef, onboardingData);
       router.push('/dashboard');
     } catch (error) {
       console.error('Error updating user document:', error);
