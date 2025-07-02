@@ -21,30 +21,29 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code',
-          scope:
-            'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/youtube.readonly',
-        },
-      },
+      // By not specifying the 'authorization' object, NextAuth.js will use the default,
+      // secure URL which is less prone to misconfiguration.
     }),
   ],
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
+        token.id = account.id;
+        token.provider = account.provider;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken;
-      session.refreshToken = token.refreshToken;
+      session.user.id = token.id;
+      session.provider = token.provider;
       return session;
     },
+  },
+  pages: {
+    signIn: '/login',
+    error: '/auth/error', // Redirect to a custom error page
   },
 });
 
