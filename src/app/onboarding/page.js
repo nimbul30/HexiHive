@@ -22,40 +22,20 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (status === 'authenticated' && session) {
       setLoading(true);
-      // More robustly check the provider based on the session data structure
-      if (
-        session?.token?.account?.provider === 'spotify' ||
-        (session.accessToken && session.provider === 'spotify')
-      ) {
-        getTopArtists(session)
-          .then((data) => {
-            if (data && data.items) {
-              setTopArtists(data.items);
-            }
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error('Error in getTopArtists:', error);
-            setLoading(false);
-          });
-      } else if (
-        session?.token?.account?.provider === 'google' ||
-        (session.accessToken && session.provider === 'google')
-      ) {
-        getMySubscriptions(session)
-          .then((data) => {
-            if (data && data.items) {
-              setSubscriptions(data.items);
-            }
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error('Error in getMySubscriptions:', error);
-            setLoading(false);
-          });
-      } else {
-        // Fallback or default case if provider is not identified
-        setLoading(false);
+      if (session.provider === 'spotify') {
+        getTopArtists(session).then((data) => {
+          if (data && data.items) {
+            setTopArtists(data.items);
+          }
+          setLoading(false);
+        });
+      } else if (session.provider === 'google') {
+        getMySubscriptions(session).then((data) => {
+          if (data && data.items) {
+            setSubscriptions(data.items);
+          }
+          setLoading(false);
+        });
       }
     }
   }, [status, session]);
@@ -70,7 +50,6 @@ export default function OnboardingPage() {
       await updateDoc(userDocRef, {
         hasCompletedOnboarding: true,
       });
-      console.log('Proceeding to dashboard...');
       router.push('/dashboard');
     } catch (error) {
       console.error('Error updating user document:', error);
@@ -78,7 +57,7 @@ export default function OnboardingPage() {
   };
 
   const renderContent = () => {
-    if (status === 'loading' || loading) {
+    if (loading) {
       return <p>Loading your vibe...</p>;
     }
 
@@ -147,13 +126,13 @@ export default function OnboardingPage() {
     return (
       <div className="flex flex-col space-y-4 w-full">
         <button
-          onClick={() => signIn('spotify', { callbackUrl: '/onboarding' })}
+          onClick={() => signIn('spotify')}
           className="flex items-center justify-center w-full bg-[#1DB954] hover:bg-[#1ED760] text-white font-bold py-4 px-6 rounded-lg text-lg"
         >
           Connect Spotify 🎧
         </button>
         <button
-          onClick={() => signIn('google', { callbackUrl: '/onboarding' })}
+          onClick={() => signIn('google')}
           className="flex items-center justify-center w-full bg-[#FF0000] hover:bg-[#ff4c4c] text-white font-bold py-4 px-6 rounded-lg text-lg"
         >
           Connect YouTube 📺
