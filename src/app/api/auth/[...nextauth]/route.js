@@ -19,7 +19,8 @@ const handler = NextAuth({
           prompt: 'consent',
           access_type: 'offline',
           response_type: 'code',
-          // This scope asks for permission to view the user's YouTube account.
+          // This scope is essential. It tells Google you want permission
+          // to view the user's YouTube account information.
           scope:
             'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube.readonly',
         },
